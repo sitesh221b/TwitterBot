@@ -1,4 +1,5 @@
-from main import *
+#from main import *
+import tweepy
 import time
 import sys
 import os

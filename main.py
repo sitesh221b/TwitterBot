@@ -1,3 +1,4 @@
+from functions import *
 from auth import *
 
 # api.get_user("TwitterID")                         ->      Search a User
@@ -7,23 +8,13 @@ from auth import *
 # api.send_direct_message("TwitterID", text="")     ->      Send message to your follower
 # api.friends_ids("TwitterID")                      ->      Array of ID's of users being followed by the specified user
 # api.followers_ids("TwitterID")                    ->      Array of ID's of users following the specified user
-
-# print(api.get_user("iamsrk"))
-
-#   The main menu with all the functionality
-
-
-# def main_menu():
-#     clear()
-#     print("\t\t\tTWITTER BOT v1.0")
-#     print("\t\t1. Your Profile")
-#     print("\t\t2. Retrieve your tweets")
-#     print("\t\t3. Send a Message")
-#     print("\t\t4. Follow someone")
-#     print("\t\t5. Block/Unblock")
-#     print("\t\t6. Search a hashtag")
+# api.create_friendship("TwitterID")                ->      Send follow request
+# api.create_block("TwitterID")                     ->      Block someone
+# api.destroy_block("TwitterID")                    ->      Unblock someone
+# api.search("query")                               ->      list of search results objects
 
 
-if __name__ == '__main__':
-    authentication()
-    # main_menu()
+# if __name__ == '__main__':
+#     api = authentication()
+#     print(api)
+#     main_menu()
