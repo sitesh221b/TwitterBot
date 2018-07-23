@@ -1,10 +1,8 @@
-#from main import *
+from auth import api
 import tweepy
-import time
 import sys
-import os
-
-global api
+import time
+# import os
 
 # def clear():
 #     if os.name == 'nt':             # For Windows
@@ -13,28 +11,7 @@ global api
 #         _ = os.system("clear")
 
 
-consumer_key = "6hzEVn8PgapYRdE3m5cxNFuPt"
-consumer_secret = "oOw3lpNSoqQnevZ9yn9Y5u5UCs2naXRTsoPRyFfsZpRh5kq4cs"
-access_token = "842271726855585792-PiJRsYaKqCn4oy32Y4WHXT9iFWCxSyQ"
-access_key = "XiuK3xGKtcZB8IqZMv2OTGn0vjGZ9qbkwBJAwShBJzHlL"
-
-#   Authorizing those tokens & keys
-oauth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-oauth.set_access_token(access_token, access_key)
-
-try:
-    api = tweepy.API(oauth)
-except tweepy.TweepError:
-    print("The Program faced an Error while authorizing the user!\nPlease run the program again.")
-
-if api:
-    print("\nValidation Successful!")
-    time.sleep(1)
-    print("Starting the Bot....")
-    time.sleep(2)
-
-
-#   The main menu with all the functionality
+#   The main menu listing all the functionality
 def main_menu():
     # clear()
     print("\n\n\t\t\tTWITTER BOT v1.0")
@@ -43,10 +20,10 @@ def main_menu():
     print("\t\t2. Retrieve your tweets")
     print("\t\t3. Send a Message")
     print("\t\t4. Follow someone")
-    print("\t\t5. Block/Unblock")
-    print("\t\t6. Search a hashtag")
-    print("\t\t7. Exit")
-
+    print("\t\t5. Block a User")
+    print("\t\t6. Unblock a User")
+    print("\t\t7. Search a hashtag")
+    print("\t\t8. Exit")
     c = int(input("Enter your choice: "))
     if c == 1:
         search_profile()
@@ -56,11 +33,13 @@ def main_menu():
         send_msg()
     elif c == 4:
         follow()
-    # elif c == 5:
-    #   block_unblock()
-    # elif c == 6:
-    #   search_tweet()
+    elif c == 5:
+        block()
+    elif c == 6:
+        unblock()
     elif c == 7:
+        search_tweet()
+    elif c == 8:
         sys.exit(0)
     else:
         print("Invalid Option!")
@@ -80,14 +59,12 @@ def search_profile():
 
 
 def ret_tweets():
-    tweets = api.user_timeline()
-    # print(api.user_timeline()[0]._json['text'])           <------ DOUBT
-    tmp = []
-    tweets_in_file = [tweet.text for tweet in tweets]   # CSV File created
-    for i in tweets_in_file:
-        tmp.append(i)
-    for i in range(20):
-        print(i+1, ": ", tmp[i])
+    # max_tweets = int(input("Number of tweets you want to retrieve: "))
+    # for tweets in tweepy.Cursor(api.user_timeline).items(max_tweets):
+    #     print(tweets)
+    tweets = api.user_timeline(api.me()._json['screen_name'])
+    for i in range(len(tweets)):
+        print(i+1, ':', tweets[i]._json['text'])
     input("\nPress Enter to continue...")
     main_menu()
 
@@ -101,7 +78,7 @@ def send_msg():
     except tweepy.TweepError:
         print("Error: Failed to send message. Try Again Later.")
 
-    input("Press Enter to continue...")
+    input("\nPress Enter to continue...")
     main_menu()
 
 
@@ -115,14 +92,44 @@ def follow():
     else:
         print("Follow request sent...")
     time.sleep(1)
-    input("Press Enter to continue...")
+    input("\nPress Enter to continue...")
     main_menu()
 
 
-# def block_unblock():
+def block():
+    user_id = input("Username of whom you want to block: ")
+    try:
+        api.create_block(user_id)
+    except tweepy.TweepError:
+        print("Error: Unable to block!")
+    else:
+        print(user_id + ' is blocked!')
+    time.sleep(1)
+    input("\nPress Enter to continue...")
+    main_menu()
 
 
-# def search_tweet():
+def unblock():
+    user_id = input("Username of whom you want to Unblock: ")
+    try:
+        api.destroy_block(user_id)
+    except tweepy.TweepError:
+        print("Error: Unable to Unblock!")
+    else:
+        print(user_id + ' is Unblocked!')
+    time.sleep(1)
+    input("\nPress any key to continue...")
+    main_menu()
 
 
-main_menu()
+def search_tweet():
+    query = input("Your Query: ")
+    max_search = int(input("Maximum Results: "))
+    searched_tweets = [status for status in tweepy.Cursor(api.search, q=query).items(max_search)]
+
+    for i in range(len(searched_tweets)):
+        print(i+1, ':', searched_tweets[i]._json['text'])
+
+    time.sleep(1)
+    input("\nPress Enter to Continue...")
+    main_menu()
