@@ -88,7 +88,7 @@ def follow():
     try:
         api.create_friendship(user_id)
     except tweepy.TweepError:
-        print("Error: Please try again later")
+        print("Error: The Username doesn't exist")
     else:
         print("Follow request sent...")
     time.sleep(1)
@@ -125,10 +125,20 @@ def unblock():
 def search_tweet():
     query = input("Your Query: ")
     max_search = int(input("Maximum Results: "))
+    print('\n')
     searched_tweets = [status for status in tweepy.Cursor(api.search, q=query).items(max_search)]
 
     for i in range(len(searched_tweets)):
-        print(i+1, ':', searched_tweets[i]._json['text'])
+        json = searched_tweets[i]._json
+        json_user = json['user']
+        user = json_user['name']
+        twitter_id = json_user['screen_name']
+        created_at = json['created_at']
+        tweet = json['text']
+        print(str(i+1)+'.\tUser: '+user+' (@'+twitter_id+')')
+        print('\tTweet Created: '+created_at)
+        print('\tTweet: '+tweet)
+        print('-------------------------------------------------------------------------------------------------------')
 
     time.sleep(1)
     input("\nPress Enter to Continue...")
