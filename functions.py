@@ -1,5 +1,6 @@
 from auth import api
 import tweepy
+import paralleldots as pd
 import sys
 import time
 # import os
@@ -18,28 +19,34 @@ def main_menu():
     print("=========================================")
     print("\t\t1. Search a Profile")
     print("\t\t2. Retrieve your tweets")
-    print("\t\t3. Send a Message")
-    print("\t\t4. Follow someone")
-    print("\t\t5. Block a User")
-    print("\t\t6. Unblock a User")
-    print("\t\t7. Search a hashtag")
-    print("\t\t8. Exit")
+    print("\t\t3. Tweet a Message")
+    print("\t\t4. Send a Message")
+    print("\t\t5. See Trending Tweets")
+    print("\t\t6. Follow someone")
+    print("\t\t7. Block a User")
+    print("\t\t8. Unblock a User")
+    print("\t\t9. Search a Hash-tag")
+    print("\t\t10. Exit")
     c = int(input("Enter your choice: "))
     if c == 1:
         search_profile()
     elif c == 2:
         ret_tweets()
     elif c == 3:
-        send_msg()
+        tweet_status()
     elif c == 4:
-        follow()
+        send_msg()
     elif c == 5:
-        block()
+        trend_tweets()
     elif c == 6:
-        unblock()
+        follow()
     elif c == 7:
-        search_tweet()
+        block()
     elif c == 8:
+        unblock()
+    elif c == 9:
+        search_tweet()
+    elif c == 10:
         sys.exit(0)
     else:
         print("Invalid Option!")
@@ -69,6 +76,19 @@ def ret_tweets():
     main_menu()
 
 
+def tweet_status():
+    text = input('Write your tweet: ')
+    try:
+        api.update_status(text)
+    except tweepy.TweepError:
+        print("Error: Unable to tweet! Try Again.")
+    else:
+        print("Tweeted!")
+    time.sleep(1)
+    input("\nPress Enter to continue...")
+    main_menu()
+
+
 def send_msg():
     user_id = input("Twitter handle to whom you want to send message: ")
     msg = input("Enter your message: ")
@@ -77,14 +97,39 @@ def send_msg():
         api.send_direct_message(user_id, text=msg)
     except tweepy.TweepError:
         print("Error: Failed to send message. Try Again Later.")
-
+    else:
+        print("Message Sent.")
+    time.sleep(1)
     input("\nPress Enter to continue...")
     main_menu()
 
 
+def trend_tweets():
+    n = int(input("Number of top trends you want see(max 50): "))
+    while n < 0 or n > 50:
+        print("Incorrect input.")
+        time.sleep(1)
+        n = int(input("Number of top trends you want see(max 50): "))
+
+    try:
+        trends = api.trends_place(1)[0]['trends']
+    except tweepy.TweepError:
+        print("Error: Please Try Again!")
+        time.sleep(1)
+        main_menu()
+    else:
+        trends = {trend['name']: trend['tweet_volume'] for trend in trends}
+        trends = {k: trends[k] for k in list(trends.keys())[:n]}
+        print("Here are top %d tweets with number of tweets:\n" % n)
+        for key in trends:
+            print(key+':', trends[key])
+        time.sleep(1)
+        input("\nPress Enter to continue...")
+        main_menu()
+
+
 def follow():
     user_id = input("Twitter ID of whom you want to follow: ")
-
     try:
         api.create_friendship(user_id)
     except tweepy.TweepError:
@@ -135,9 +180,22 @@ def search_tweet():
         twitter_id = json_user['screen_name']
         created_at = json['created_at']
         tweet = json['text']
+        loc = json_user['location']
+        lang = json_user['language']
+        t_zone = json_user['time_zone']
+        sentiment = pd.sentiment(tweet)
+        emotion = max(pd.emotion(tweet)['emotion']['probabilities'])
+        abuse = pd.abuse(tweet)['sentence_type']
         print(str(i+1)+'.\tUser: '+user+' (@'+twitter_id+')')
         print('\tTweet Created: '+created_at)
+        print('\tLocation: '+loc)
+        print('\tLanguage: '+lang)
+        print('\tTime Zone: '+t_zone)
         print('\tTweet: '+tweet)
+        print('\n\tSentiment Analysis:')
+        print('\t\tSentiment: '+sentiment)
+        print('\t\tEmotion: '+emotion)
+        print('\t\tAbuse: '+abuse)
         print('-------------------------------------------------------------------------------------------------------')
 
     time.sleep(1)
