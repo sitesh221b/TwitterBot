@@ -59,8 +59,12 @@ def search_profile():
     data = api.get_user(user_id)._json
     print("Name: "+data['name'])
     print("Location: "+data['location'])
+    print("Language: "+data['lang'])
     print("Followers: ", data['followers_count'])
     print("Following: ", data['friends_count'])
+    print("Created At: "+data['created_at'])
+    print("Description: ", data['description'])
+    print("URL: "+data['url'])
     input("\nPress Enter to continue...")
     main_menu()
 
@@ -120,9 +124,9 @@ def trend_tweets():
     else:
         trends = {trend['name']: trend['tweet_volume'] for trend in trends}
         trends = {k: trends[k] for k in list(trends.keys())[:n]}
-        print("Here are top %d tweets with number of tweets:\n" % n)
+        print("\nHere are top %d tweets with number of tweets:" % n)
         for key in trends:
-            print(key+':', trends[key])
+            print(key+':', trends[key], '\n')
         time.sleep(1)
         input("\nPress Enter to continue...")
         main_menu()
@@ -181,22 +185,23 @@ def search_tweet():
         created_at = json['created_at']
         tweet = json['text']
         loc = json_user['location']
-        lang = json_user['language']
+        lang = json_user['lang']
         t_zone = json_user['time_zone']
-        sentiment = pd.sentiment(tweet)
+        sentiment = pd.sentiment(tweet)['sentiment']
         emotion = max(pd.emotion(tweet)['emotion']['probabilities'])
         abuse = pd.abuse(tweet)['sentence_type']
         print(str(i+1)+'.\tUser: '+user+' (@'+twitter_id+')')
         print('\tTweet Created: '+created_at)
         print('\tLocation: '+loc)
         print('\tLanguage: '+lang)
-        print('\tTime Zone: '+t_zone)
+        print('\tTime Zone: ', t_zone)
         print('\tTweet: '+tweet)
-        print('\n\tSentiment Analysis:')
+        print('\n\tSentiment Analysis:\n')
         print('\t\tSentiment: '+sentiment)
         print('\t\tEmotion: '+emotion)
         print('\t\tAbuse: '+abuse)
         print('-------------------------------------------------------------------------------------------------------')
+        time.sleep(0.2)
 
     time.sleep(1)
     input("\nPress Enter to Continue...")
