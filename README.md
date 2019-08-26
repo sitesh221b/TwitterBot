@@ -6,5 +6,3 @@ Giving away the tokens and consumer secret is not cool so you can generate your 
 and explore it as using your own Twitter account.
 
 NOTE: Run main.py to run the program
-
-TwitterBot v2.0 is coming soon...
