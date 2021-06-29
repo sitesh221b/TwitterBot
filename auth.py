@@ -1,7 +1,7 @@
 import tweepy
 import paralleldots as pd
 
-pd_key = "RLIqcsE8Vx7A7TcPq2LInhC0i4TR6wxvFRinLtfNMVA"
+pd_key = ""
 print("\nFor security reasons you'll have to enter Consumer Key & Access Token here only:\n")
 
 # Taking tokens & keys from the user
